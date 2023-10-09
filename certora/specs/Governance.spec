@@ -301,9 +301,8 @@ rule insufficient_proposition_power_allow_time_elapse(method f) filtered { f -> 
   mathint creator_power = _GovernancePowerStrategy.getFullPropositionPower(e4,getProposalCreator(proposalId));
   mathint voting_config_min_power = getMinPropositionPower(getVotingConfig(getProposalAccessLevel(proposalId))) * PRECISION_DIVIDER(); //uint56
 
-  require state1 != state2; 
-  require creator_power <= voting_config_min_power;
-  assert state2 == IGovernanceCore.State.Cancelled || state2 == IGovernanceCore.State.Failed || state2 == IGovernanceCore.State.Expired;
+  assert (state1 != state2 && (creator_power <= voting_config_min_power)) => 
+  state2 == IGovernanceCore.State.Cancelled || state2 == IGovernanceCore.State.Failed || state2 == IGovernanceCore.State.Expired;
 
 }
 
