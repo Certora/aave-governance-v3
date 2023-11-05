@@ -28,10 +28,12 @@ interface IPayloadsControllerCore is IRescuable {
    * @notice holds configuration of the executor
    * @param executor address of the executor
    * @param delay time in seconds between queuing and execution
+   * @param gracePeriod time in seconds where the proposal can be executed (from executionTime) before it expires
    */
   struct ExecutorConfig {
     address executor;
     uint40 delay;
+    uint40 gracePeriod;
   }
 
   /**
@@ -72,8 +74,6 @@ interface IPayloadsControllerCore is IRescuable {
    * @param executedAt time indicating when a payload has been executed. In seconds  // max is: 1.099511628×10¹² (ie 34'865 years)
    * @param cancelledAt time indicating when the payload has been cancelled. In seconds
    * @param expirationTime time indicating when the Payload will expire
-   * @param delay time in seconds that a payload must remain queued before execution
-   * @param gracePeriod time in seconds that a payload has to be executed
    * @param actions array of actions to be executed
    */
   struct Payload {
@@ -85,8 +85,6 @@ interface IPayloadsControllerCore is IRescuable {
     uint40 executedAt;
     uint40 cancelledAt;
     uint40 expirationTime;
-    uint40 delay;
-    uint40 gracePeriod;
     ExecutionAction[] actions;
   }
 
@@ -95,11 +93,13 @@ interface IPayloadsControllerCore is IRescuable {
    * @param accessLevel level of access that the executor will be set to
    * @param executor address that will be set for the determined access level
    * @param delay time in seconds between queuing and execution
+   * @param gracePeriod time in seconds where the proposal can be executed (from executionTime) before it expires
    */
   event ExecutorSet(
     PayloadsControllerUtils.AccessControl indexed accessLevel,
     address indexed executor,
-    uint40 delay
+    uint40 delay,
+    uint40 gracePeriod
   );
 
   /**

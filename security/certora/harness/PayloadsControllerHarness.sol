@@ -18,13 +18,13 @@ constructor(
 
 
   function getPayloadFieldsById(uint40 payloadId) external view 
-  returns (address,PayloadsControllerUtils.AccessControl,PayloadState,uint40,uint40,uint40,uint40,uint40,uint40,uint40)
+  returns (address,PayloadsControllerUtils.AccessControl,PayloadState,uint40,uint40,uint40,uint40,uint40)
   {
     Payload memory payload = _payloads[payloadId];
     
     return  (payload.creator, payload.maximumAccessLevelRequired, payload.state, 
     payload.createdAt, payload.queuedAt, payload.executedAt, payload.cancelledAt, 
-    payload.expirationTime, payload.delay, payload.gracePeriod);
+    payload.expirationTime);
   }
 
   function getCreator(uint40 payloadId) external view returns (address){
@@ -41,14 +41,6 @@ constructor(
 
   function getPayloadExpirationTimeById(uint40 payloadId) external view returns (uint40){
     return _payloads[payloadId].expirationTime;
-  }
-
-  function getPayloadGracePeriod(uint40 payloadId) external view returns (uint40){
-    return _payloads[payloadId].gracePeriod;
-  }
-
-  function getPayloadDelay(uint40 payloadId) external view returns (uint40){
-    return _payloads[payloadId].delay;
   }
 
   function getPayloadCreatedAt(uint40 payloadId) external view returns (uint40){

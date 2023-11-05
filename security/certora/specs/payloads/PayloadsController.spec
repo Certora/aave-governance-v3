@@ -21,11 +21,9 @@ methods {
 	function getExecutorSettingsByAccessControl(PayloadsControllerUtils.AccessControl) external returns (IPayloadsControllerCore.ExecutorConfig) envfree;
 	function getPayloadById(uint40) external returns (IPayloadsControllerCore.Payload);
 	function getPayloadFieldsById(uint40 payloadId) external 
-  		returns (address,PayloadsControllerUtils.AccessControl,IPayloadsControllerCore.PayloadState,uint40,uint40,uint40,uint40,uint40,uint40,uint40) envfree;
+  		returns (address,PayloadsControllerUtils.AccessControl,IPayloadsControllerCore.PayloadState,uint40,uint40,uint40,uint40,uint40) envfree;
 	function getPayloadQueuedAtById(uint40 payloadId) external returns (uint40) envfree;
 	function getPayloadExpirationTimeById(uint40 payloadId) external returns (uint40) envfree;
-	function getPayloadGracePeriod(uint40 payloadId) external returns (uint40) envfree;
-	function getPayloadDelay(uint40 payloadId) external returns (uint40) envfree;
 	function getPayloadCreatedAt(uint40 payloadId) external returns (uint40) envfree;
 	function getPayloadQueuedAt(uint40 payloadId) external returns (uint40) envfree;
 	function getPayloadExecutedAt(uint40 payloadId) external returns (uint40) envfree;
@@ -98,8 +96,7 @@ invariant  null_access_level_if_out_of_bound_payload(uint40 id)
 /// @title Payload creator is address(0) and it expiration time is zero if the payload is beyond _payloadsCount
 invariant  null_creator_and_zero_expiration_time_if_out_of_bound_payload(uint40 id)
 	id >= getPayloadsCount() => 
-	getCreator(id) == 0 && getExpirationTime(id) == 0
-	&& getPayloadGracePeriod(id) == 0 && getPayloadDelay(id) == 0;
+	getCreator(id) == 0 && getExpirationTime(id) == 0;
 
 /// @title Payload's maximal access level is null if and only if state is none 
 invariant  null_access_level_iff_state_is_none(uint40 id)
@@ -231,12 +228,9 @@ rule payload_fields_immutable_after_createPayload(method f, uint40 id)filtered {
     uint40 executedAt_before;
     uint40 cancelledAt_before;
     uint40 expirationTime_before;
-	uint40 delay_before;
-    uint40 gracePeriod_before;
 	
 	creator_before, maximumAccessLevelRequired_before, state_before, createdAt_before,
-	queuedAt_before, executedAt_before, cancelledAt_before, expirationTime_before,
-	delay_before, gracePeriod_before =
+	queuedAt_before, executedAt_before, cancelledAt_before, expirationTime_before =
 		getPayloadFieldsById(id);
 
 	f(e2, args2);
@@ -249,20 +243,15 @@ rule payload_fields_immutable_after_createPayload(method f, uint40 id)filtered {
     uint40 executedAt_after;
     uint40 cancelledAt_after;
     uint40 expirationTime_after;
-	uint40 delay_after;
-    uint40 gracePeriod_after;
 	
 	creator_after, maximumAccessLevelRequired_after, state_after, createdAt_after,
-	queuedAt_after, executedAt_after, cancelledAt_after, expirationTime_after,
-	delay_after, gracePeriod_after =
+	queuedAt_after, executedAt_after, cancelledAt_after, expirationTime_after =
 		getPayloadFieldsById(id);
 
 	assert id < payload_count => creator_before == creator_after;
 	assert id < payload_count => maximumAccessLevelRequired_before == maximumAccessLevelRequired_after;
 	assert id < payload_count => createdAt_before == createdAt_after;
 	assert id < payload_count => expirationTime_before == expirationTime_after;
-	assert id < payload_count => delay_before == delay_after;
-	assert id < payload_count => gracePeriod_before == gracePeriod_after;
 
 }
 
@@ -284,11 +273,9 @@ rule initialized_payload_fields_are_immutable(method f, uint40 id)filtered { f->
     uint40 executedAt_before;
     uint40 cancelledAt_before;
     uint40 expirationTime_before;
-	uint40 delay_before;
-    uint40 gracePeriod_before;
 	
 	creator_before, maximumAccessLevelRequired_before, state_before, createdAt_before,
-	queuedAt_before, executedAt_before, cancelledAt_before, expirationTime_before, delay_before, gracePeriod_before =
+	queuedAt_before, executedAt_before, cancelledAt_before, expirationTime_before =
 		getPayloadFieldsById(id);
 	f(e, args);
 
@@ -300,11 +287,9 @@ rule initialized_payload_fields_are_immutable(method f, uint40 id)filtered { f->
     uint40 executedAt_after;
     uint40 cancelledAt_after;
     uint40 expirationTime_after;
-	uint40 delay_after;
-    uint40 gracePeriod_after;
 	
 	creator_after, maximumAccessLevelRequired_after, state_after, createdAt_after,
-	queuedAt_after, executedAt_after, cancelledAt_after, expirationTime_after, delay_after, gracePeriod_after =
+	queuedAt_after, executedAt_after, cancelledAt_after, expirationTime_after =
 		getPayloadFieldsById(id);
 
 	assert maximumAccessLevelRequired_before != PayloadsControllerUtils.AccessControl.Level_null => creator_before == creator_after;
@@ -312,14 +297,9 @@ rule initialized_payload_fields_are_immutable(method f, uint40 id)filtered { f->
 												maximumAccessLevelRequired_before == maximumAccessLevelRequired_after;
 	assert maximumAccessLevelRequired_before != PayloadsControllerUtils.AccessControl.Level_null => createdAt_before == createdAt_after;
 	assert maximumAccessLevelRequired_before != PayloadsControllerUtils.AccessControl.Level_null => expirationTime_before == expirationTime_after;
-	assert maximumAccessLevelRequired_before != PayloadsControllerUtils.AccessControl.Level_null => delay_before == delay_after;
-	assert maximumAccessLevelRequired_before != PayloadsControllerUtils.AccessControl.Level_null => gracePeriod_before == gracePeriod_after;
-
+	
 	assert creator_before != 0 => creator_before == creator_after;
 	assert expirationTime_before != 0 => expirationTime_before == expirationTime_after;
-
-	assert gracePeriod_before != 0 => delay_before == delay_after;
-	assert gracePeriod_before != 0 => gracePeriod_before == gracePeriod_after;
 
 }
 
@@ -508,17 +488,17 @@ rule executor_of_maximumAccessLevelRequired_exists(method f) filtered { f-> !f.i
 /// @title Property #5: A Payload can only be executed when in queued state and time lock has finished and before the grace period has passed.
 /// @notice executePayload()  should not check check gracePeriod of every actions.
 /// @notice it checks only the executor of the maximal access level.
-rule execute_before_delay__maximumAccessLevelRequired{
-	env e;
-	uint40 id;
-	requireInvariant payload_grace_period_eq_global_grace_period(id);
-	requireInvariant null_access_level_iff_state_is_none(id);
+// rule execute_before_delay__maximumAccessLevelRequired{
+// 	env e;
+// 	uint40 id;
+// 	requireInvariant payload_grace_period_eq_global_grace_period(id);
+// 	requireInvariant null_access_level_iff_state_is_none(id);
 
-	executePayload(e, id);
-	mathint timestamp = e.block.timestamp;
-	assert timestamp > getPayloadQueuedAtById(id) + getPayloadDelay(id);
-	assert timestamp < getPayloadQueuedAtById(id) +  getPayloadDelay(id) + GRACE_PERIOD();
-}
+// 	executePayload(e, id);
+// 	mathint timestamp = e.block.timestamp;
+// 	assert timestamp > getPayloadQueuedAtById(id) + getPayloadDelay(id);
+// 	assert timestamp < getPayloadQueuedAtById(id) +  getPayloadDelay(id) + GRACE_PERIOD();
+// }
 
 
 // @title A Payload can only be executed when in queued state 
@@ -637,27 +617,27 @@ rule no_transition_beyond_state_variable_gt_3{
 
 
 // @title Payload's grace period is equal to the contract grace period
-invariant payload_grace_period_eq_global_grace_period(uint40 id)
-	getMaximumAccessLevelRequired(id) != PayloadsControllerUtils.AccessControl.Level_null 
-	=> getPayloadGracePeriod(id) == GRACE_PERIOD();
+// invariant payload_grace_period_eq_global_grace_period(uint40 id)
+// 	getMaximumAccessLevelRequired(id) != PayloadsControllerUtils.AccessControl.Level_null 
+// 	=> getPayloadGracePeriod(id) == GRACE_PERIOD();
 
 
-invariant zero_payload_grace_period_before_payload_creation(uint40 id)
-	getMaximumAccessLevelRequired(id) == PayloadsControllerUtils.AccessControl.Level_null 
-	=> getPayloadGracePeriod(id) == 0;
+// invariant zero_payload_grace_period_before_payload_creation(uint40 id)
+// 	getMaximumAccessLevelRequired(id) == PayloadsControllerUtils.AccessControl.Level_null 
+// 	=> getPayloadGracePeriod(id) == 0;
 
 
 
-// @title Payload's delay is in [MIN_EXECUTION_DELAY, MAX_EXECUTION_DELAY]
-invariant payload_delay_within_range(uint40 id)
-	getMaximumAccessLevelRequired(id) != PayloadsControllerUtils.AccessControl.Level_null => 
-			getPayloadDelay(id) >= MIN_EXECUTION_DELAY() && getPayloadDelay(id) <= MAX_EXECUTION_DELAY()
-	{
-	preserved {
-		requireInvariant executor_access_level_within_range(PayloadsControllerUtils.AccessControl.Level_1);
-		requireInvariant executor_access_level_within_range(PayloadsControllerUtils.AccessControl.Level_2);
-		}
-	}
+// // @title Payload's delay is in [MIN_EXECUTION_DELAY, MAX_EXECUTION_DELAY]
+// invariant payload_delay_within_range(uint40 id)
+// 	getMaximumAccessLevelRequired(id) != PayloadsControllerUtils.AccessControl.Level_null => 
+// 			getPayloadDelay(id) >= MIN_EXECUTION_DELAY() && getPayloadDelay(id) <= MAX_EXECUTION_DELAY()
+// 	{
+// 	preserved {
+// 		requireInvariant executor_access_level_within_range(PayloadsControllerUtils.AccessControl.Level_1);
+// 		requireInvariant executor_access_level_within_range(PayloadsControllerUtils.AccessControl.Level_2);
+// 		}
+// 	}
 
 
 // @title Executor delay of payload's max access level is in [MIN_EXECUTION_DELAY, MAX_EXECUTION_DELAY]

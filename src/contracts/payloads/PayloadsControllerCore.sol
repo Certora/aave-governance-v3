@@ -85,8 +85,7 @@ abstract contract PayloadsControllerCore is
     newPayload.state = PayloadState.Created;
     newPayload.createdAt = creationTime;
     newPayload.expirationTime = creationTime + EXPIRATION_DELAY;
-    newPayload.gracePeriod = GRACE_PERIOD;
-
+    
     PayloadsControllerUtils.AccessControl maximumAccessLevelRequired;
     for (uint256 i = 0; i < actions.length; i++) {
       require(actions[i].target != address(0), Errors.INVALID_ACTION_TARGET);
@@ -108,12 +107,7 @@ abstract contract PayloadsControllerCore is
       }
     }
     newPayload.maximumAccessLevelRequired = maximumAccessLevelRequired;
-    ExecutorConfig
-      memory maxRequiredExecutorConfig = _accessLevelToExecutorConfig[
-        maximumAccessLevelRequired
-      ];
-    newPayload.delay = maxRequiredExecutorConfig.delay;
-
+    
     emit PayloadCreated(
       payloadId,
       msg.sender,
@@ -132,7 +126,11 @@ abstract contract PayloadsControllerCore is
       Errors.PAYLOAD_NOT_IN_QUEUED_STATE
     );
 
-    uint256 executionTime = payload.queuedAt + payload.delay;
+       // check that this payload satisfied to all time conditions of the highest level of access control defined
+    ExecutorConfig storage executorConfig = _accessLevelToExecutorConfig[
+      payload.maximumAccessLevelRequired
+    ];
+    uint256 executionTime = payload.queuedAt + executorConfig.delay;
     require(block.timestamp > executionTime, Errors.TIMELOCK_NOT_FINISHED);
 
     payload.state = PayloadState.Executed;
@@ -232,12 +230,15 @@ abstract contract PayloadsControllerCore is
       return state;
     }
 
+    ExecutorConfig memory executorConfig = _accessLevelToExecutorConfig[
+      payload.maximumAccessLevelRequired
+    ];
     if (
       (state == PayloadState.Created &&
         block.timestamp >= payload.expirationTime) ||
       (state == PayloadState.Queued &&
         block.timestamp >=
-        payload.queuedAt + payload.delay + payload.gracePeriod)
+        payload.queuedAt + executorConfig.delay + executorConfig.gracePeriod)
     ) {
       return PayloadState.Expired;
     }
@@ -325,7 +326,8 @@ abstract contract PayloadsControllerCore is
       emit ExecutorSet(
         newExecutorConfig.accessLevel,
         newExecutorConfig.executorConfig.executor,
-        newExecutorConfig.executorConfig.delay
+        newExecutorConfig.executorConfig.delay,
+        newExecutorConfig.executorConfig.gracePeriod
       );
     }
   }
