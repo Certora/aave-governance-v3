@@ -727,7 +727,8 @@ abstract contract GovernanceCore is
       (state == IGovernanceCore.State.Created &&
         // if current time + duration of the vote is bigger than expiration time, and vote has not been activated,
         // proposal should be expired as when the vote result returns, proposal will have expired.
-        block.timestamp + proposal.votingDuration > expirationTime)
+        block.timestamp + _votingConfigs[proposal.accessLevel].votingDuration >
+        expirationTime)
     ) {
       return State.Expired;
     }
