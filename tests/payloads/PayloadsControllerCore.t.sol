@@ -266,7 +266,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1,
-        executor: address(newExecutor)
+        executor: address(newExecutor),
+        gracePeriod: 7
       })
     });
 
