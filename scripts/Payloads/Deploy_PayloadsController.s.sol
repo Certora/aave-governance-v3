@@ -39,7 +39,8 @@ abstract contract BaseDeployPayloadsController is GovBaseScript {
         accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
         executorConfig: IPayloadsControllerCore.ExecutorConfig({
           executor: _getAddresses(TRANSACTION_NETWORK()).executorLvl1,
-          delay: LVL1_DELAY()
+          delay: LVL1_DELAY(),
+          gracePeriod: uint40(7 days)
         })
       });
   }
@@ -54,7 +55,8 @@ abstract contract BaseDeployPayloadsController is GovBaseScript {
         accessLevel: PayloadsControllerUtils.AccessControl.Level_2,
         executorConfig: IPayloadsControllerCore.ExecutorConfig({
           executor: _getAddresses(TRANSACTION_NETWORK()).executorLvl2,
-          delay: LVL2_DELAY()
+          delay: LVL2_DELAY(),
+          gracePeriod: uint40(7 days)
         })
       });
   }
