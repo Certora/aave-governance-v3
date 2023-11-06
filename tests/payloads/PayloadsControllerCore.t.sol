@@ -52,7 +52,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(shortExecutor)
+        executor: address(shortExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -61,7 +62,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_2,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 10 days,
-        executor: address(longExecutor)
+        executor: address(longExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -70,7 +72,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(longExecutor)
+        executor: address(longExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -205,7 +208,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: uint40(1 days),
-        executor: address(newExecutor)
+        executor: address(newExecutor),
+        gracePeriod: uint40(7 days)
       })
     });
 
@@ -281,7 +285,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 11 days,
-        executor: address(newExecutor)
+        executor: address(newExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -300,7 +305,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_null,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(newExecutor)
+        executor: address(newExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -317,7 +323,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(0)
+        executor: address(0),
+        gracePeriod: 7 days
       })
     });
 
@@ -334,7 +341,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(longExecutor)
+        executor: address(longExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -351,7 +359,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_2,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(shortExecutor)
+        executor: address(shortExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -370,7 +379,8 @@ contract PayloadsControllerCoreTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: 1 days,
-        executor: address(newExecutor)
+        executor: address(newExecutor),
+        gracePeriod: 7 days
       })
     });
 
@@ -693,7 +703,7 @@ contract PayloadsControllerCoreTest is Test {
           PayloadsControllerUtils.AccessControl.Level_2
         )
         .delay +
-      savedPayload.gracePeriod +
+    //  savedPayload.gracePeriod +
       extraTime;
     skip(skipTimeToTimelock);
 

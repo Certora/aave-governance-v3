@@ -25,7 +25,8 @@ contract PayloadsControllerTest is Test {
       accessLevel: PayloadsControllerUtils.AccessControl.Level_1,
       executorConfig: IPayloadsControllerCore.ExecutorConfig({
         delay: uint40(86400),
-        executor: address(81201287423)
+        executor: address(81201287423),
+        gracePeriod: uint40(604800)
       })
     });
 
