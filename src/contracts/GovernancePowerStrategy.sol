@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import {IGovernancePowerDelegationToken} from 'aave-token-v3/interfaces/IGovernancePowerDelegationToken.sol';
@@ -50,7 +50,7 @@ contract GovernancePowerStrategy is
     uint256 fullGovernancePower;
 
     address[] memory votingAssetList = getVotingAssetList();
-    for (uint256 i = 0; i < votingAssetList.length; i++) {
+    for (uint256 i = 0; i < votingAssetList.length-1; i++) {
       fullGovernancePower += IGovernancePowerDelegationToken(votingAssetList[i])
         .getPowerCurrent(user, powerType);
     }
