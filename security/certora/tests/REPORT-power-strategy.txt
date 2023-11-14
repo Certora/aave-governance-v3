@@ -10,7 +10,7 @@ Questions:
 
 Mutations:
 ---------
-1.  UNDETECTED
+1.  UNDETECTED (one rule got Time-Out)
 Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-1.sol
 The change: BaseVotingStrategy.sol:76:
    orig:
