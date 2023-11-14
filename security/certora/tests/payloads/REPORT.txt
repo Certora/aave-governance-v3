@@ -1,0 +1,50 @@
+verifyPayloadsController.conf
+=============================
+
+Mutations:
+---------
+1. DETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-1.sol
+The change: PayloadsControllerCore:81:
+   orig:
+   uint40 payloadId = _payloadsCount++;
+   mutant:
+   uint40 payloadId = _payloadsCount;
+
+
+
+2. TIME-OUT (most jobs)
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-2.sol
+The change: PayloadsControllerCore:142:
+   orig:
+   ExecutionAction storage action = payload.actions[i];
+   mutant:
+   ExecutionAction storage action = payload.actions[0];
+
+
+3. UNDETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-3.sol
+The change: PayloadsControllerCore:169:
+   orig:
+   payload.state = PayloadState.Cancelled;
+   mutant:
+   payload.state = PayloadState.Queued;
+
+
+4. UNDETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-4.sol
+The change: PayloadsControllerCore:242:
+   orig:
+   return PayloadState.Expired;
+   mutant:
+   return PayloadState.None;
+
+
+5. UNDETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-5.sol
+The change: PayloadsControllerCore:290:
+   orig:
+   for (uint256 i = 0; i < executors.length; i++) {
+   mutant:
+   for (uint256 i = 0; i < 1; i++) {
+
