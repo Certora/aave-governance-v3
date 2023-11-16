@@ -382,7 +382,7 @@ abstract contract VotingMachineWithProofs is
     uint256[] memory ids = new uint256[](size);
     for (uint256 i = 0; i < size; i++) {
       ids[i] = _proposalsVoteConfigurationIds[
-        proposalListLength - skip - i - 1
+        proposalListLength - skip - i
       ];
     }
     return ids;
