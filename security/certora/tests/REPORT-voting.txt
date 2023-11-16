@@ -46,8 +46,6 @@ The change: VotingMachineWithProofs.sol::222
    mutant:
       return _proposals[proposalId+1].votes[user];
 
-Suggestion for rules that can catch it:
-
 
 4. DETECTED
 Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-4.sol
@@ -67,5 +65,4 @@ The change: VotingMachineWithProofs.sol::288
    mutant:
       proposalListLength - skip - i 
 
-Suggestion for rules that can catch it:
 
