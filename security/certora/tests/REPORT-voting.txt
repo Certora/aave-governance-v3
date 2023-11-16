@@ -1,19 +1,6 @@
 voting_and_tally.spec
 =====================
 
-Questions/Comments:
-------------------
-1. In most of the confs we have loop_iter==1. Is it correct ?
-2. When running the tests:
-   - power_summary.conf has several failures (including sanity fails)
-   - misc.conf has several failures and timeouts
-   - proposal_states.conf has one sanity failure.
-3. I checked the mutants against:
-   - legality.conf
-   - proposal_config.conf
-   - proposal_states.conf
-   - voting_and_tally.conf
-
 
 Mutations:
 ---------
