@@ -239,7 +239,8 @@ abstract contract PayloadsControllerCore is
         block.timestamp >=
         payload.queuedAt + payload.delay + payload.gracePeriod)
     ) {
-      return PayloadState.Expired;
+        //return PayloadState.Expired; // ORIG
+        return PayloadState.None; // MUTANT
     }
 
     return state;
