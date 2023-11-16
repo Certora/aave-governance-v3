@@ -23,7 +23,8 @@ Suggestion for rules that can catch it:
 - For every voting token T, and every user U that does not delegate, if the balance of U in T is increased then the power of U increased.
 
 
-2. UNDETECTED
+2. DETECTED VVV
+By certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
 Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-2.sol
 The change: BaseVotingStrategy.sol:109:
    orig:
