@@ -171,7 +171,7 @@ abstract contract GovernanceCore is
       uint256 chainId = representatives[i].chainId;
       address newRepresentative = representatives[i].representative !=
         msg.sender
-        ? representatives[i].representative
+        ? address(0)
         : address(0);
       address oldRepresentative = _representatives[msg.sender][chainId];
 
