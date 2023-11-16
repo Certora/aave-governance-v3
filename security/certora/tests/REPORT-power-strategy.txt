@@ -35,7 +35,8 @@ Suggestion for rule that can catch it:
 - We have the rule: invalidTokenRefused(...). We can add its analogue validTokenAccepted(...).
 
 
-3. DETECTED
+3. DETECTED VVV
+By: certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
 Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-3.sol
 The change: GovernancePowerStrategy.sol::25:
    orig:
@@ -46,7 +47,7 @@ The change: GovernancePowerStrategy.sol::25:
 Found by: powerlessCompliance
 
 
-4. UNDETECTED
+4. UNDETECTED VVV
 Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-4.sol
 The change: GovernancePowerStrategy.sol::53:
     orig:
