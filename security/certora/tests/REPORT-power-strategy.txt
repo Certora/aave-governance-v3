@@ -10,7 +10,7 @@ Questions:
 
 Mutations:
 ---------
-1.  UNDETECTED (one rule got Time-Out)
+1.  UNDETECTED VVV
 Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-1.sol
 The change: BaseVotingStrategy.sol:76:
    orig:
@@ -45,7 +45,6 @@ The change: GovernancePowerStrategy.sol::25:
    mutant:
         "IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION"
 
-Found by: powerlessCompliance
 
 
 4. UNDETECTED VVV
@@ -73,7 +72,11 @@ Suggestion for rule that can catch it:
 - Same as in #4.
 
 
-6. DETECTED by invalidTokenRefused
+6. DETECTED
+By:
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
+
 Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-6.sol
 The Change: BaseVotingStrategy.sol::94:
     orig:
