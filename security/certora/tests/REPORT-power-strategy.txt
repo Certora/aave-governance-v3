@@ -10,7 +10,7 @@ Questions:
 
 Mutations:
 ---------
-1.  UNDETECTED VVV
+1.  UNDETECTED
 Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-1.sol
 The change: BaseVotingStrategy.sol:76:
    orig:
@@ -23,7 +23,7 @@ Suggestion for rules that can catch it:
 - For every voting token T, and every user U that does not delegate, if the balance of U in T is increased then the power of U increased.
 
 
-2. DETECTED VVV
+2. DETECTED 
 By certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
 Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-2.sol
 The change: BaseVotingStrategy.sol:109:
@@ -36,7 +36,7 @@ Suggestion for rule that can catch it:
 - We have the rule: invalidTokenRefused(...). We can add its analogue validTokenAccepted(...).
 
 
-3. DETECTED VVV
+3. DETECTED 
 By: certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
 Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-3.sol
 The change: GovernancePowerStrategy.sol::25:
@@ -47,7 +47,7 @@ The change: GovernancePowerStrategy.sol::25:
 
 
 
-4. UNDETECTED VVV
+4. UNDETECTED 
 Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-4.sol
 The change: GovernancePowerStrategy.sol::53:
     orig:

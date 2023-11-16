@@ -19,6 +19,9 @@ Mutations:
 ---------
 
 7. DETECTED
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
+
 Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-7.sol
 The change: VotingMachineWithProofs.sol::319 
    orig:
@@ -28,6 +31,9 @@ The change: VotingMachineWithProofs.sol::319
 
 
 8. DETECTED
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
+
 Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-8.sol
 The change: VotingMachineWithProofs.sol::324
     orig:
@@ -37,7 +43,7 @@ The change: VotingMachineWithProofs.sol::324
 
 Suggestion for rules that can catch it:
 
-9. UNDETECTED
+9. 
 Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-9.sol
 The change: VotingMachineWithProofs.sol::385
     orig:
