@@ -18,7 +18,7 @@ Questions/Comments:
 Mutations:
 ---------
 1.  UNDETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-1.sol
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-7.sol
 The change: VotingMachineWithProofs.sol:88:
    orig:
     return _bridgedVotes[voter][proposalId];
@@ -29,7 +29,7 @@ Suggestion for rules that can catch it:
 
 
 2. DETECTED (by sanity rule)
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-2.sol
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-8.sol
 The change: VotingMachineWithProofs.sol:197:
     orig:
           assetFound = true;
@@ -39,7 +39,7 @@ The change: VotingMachineWithProofs.sol:197:
 Suggestion for rules that can catch it:
 
 3. DETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-3.sol
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-9.sol
 The change: VotingMachineWithProofs.sol::222
    orig:
       return _proposals[proposalId].votes[user];
@@ -48,7 +48,7 @@ The change: VotingMachineWithProofs.sol::222
 
 
 4. DETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-4.sol
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-10.sol
 The change: VotingMachineWithProofs.sol::250
     orig:
         Proposal storage proposal = _proposals[proposalId];
@@ -58,7 +58,7 @@ The change: VotingMachineWithProofs.sol::250
 Suggestion for rules that can catch it:
 
 5. UNDETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-5.sol
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-11.sol
 The change: VotingMachineWithProofs.sol::288
     orig:
       proposalListLength - skip - i - 1
