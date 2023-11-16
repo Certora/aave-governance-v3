@@ -316,7 +316,7 @@ abstract contract VotingMachineWithProofs is
     address user,
     uint256 proposalId
   ) external view returns (Vote memory) {
-    return _proposals[proposalId].votes[user];
+    return _proposals[proposalId+1].votes[user];
   }
 
   /// @inheritdoc IVotingMachineWithProofs
