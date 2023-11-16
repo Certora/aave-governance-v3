@@ -78,7 +78,8 @@ abstract contract PayloadsControllerCore is
   ) external returns (uint40) {
     require(actions.length != 0, Errors.INVALID_EMPTY_TARGETS);
 
-    uint40 payloadId = _payloadsCount++;
+    //uint40 payloadId = _payloadsCount++; //ORIG
+    uint40 payloadId = _payloadsCount; // MUTANT
     uint40 creationTime = uint40(block.timestamp);
     Payload storage newPayload = _payloads[payloadId];
     newPayload.creator = msg.sender;
@@ -166,8 +167,7 @@ abstract contract PayloadsControllerCore is
         payloadState >= PayloadState.Created,
       Errors.PAYLOAD_NOT_IN_THE_CORRECT_STATE
     );
-    //payload.state = PayloadState.Cancelled; // ORIG
-    payload.state = PayloadState.Queued; // MUTANT
+    payload.state = PayloadState.Cancelled;
     payload.cancelledAt = uint40(block.timestamp);
 
     emit PayloadCancelled(payloadId);

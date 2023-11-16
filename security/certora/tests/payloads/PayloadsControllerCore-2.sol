@@ -139,7 +139,8 @@ abstract contract PayloadsControllerCore is
     payload.executedAt = uint40(block.timestamp);
 
     for (uint256 i = 0; i < payload.actions.length; i++) {
-      ExecutionAction storage action = payload.actions[i];
+      //ExecutionAction storage action = payload.actions[i]; // ORIG
+        ExecutionAction storage action = payload.actions[0]; // MUTANT
       IExecutor executor = IExecutor(
         _accessLevelToExecutorConfig[action.accessLevel].executor
       );
@@ -166,8 +167,7 @@ abstract contract PayloadsControllerCore is
         payloadState >= PayloadState.Created,
       Errors.PAYLOAD_NOT_IN_THE_CORRECT_STATE
     );
-    //payload.state = PayloadState.Cancelled; // ORIG
-    payload.state = PayloadState.Queued; // MUTANT
+    payload.state = PayloadState.Cancelled;
     payload.cancelledAt = uint40(block.timestamp);
 
     emit PayloadCancelled(payloadId);

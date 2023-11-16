@@ -17,55 +17,38 @@ Questions/Comments:
 
 Mutations:
 ---------
-1.  UNDETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-1.sol
-The change: VotingMachineWithProofs.sol:88:
-   orig:
-    return _bridgedVotes[voter][proposalId];
-   mutant:
-    return _bridgedVotes[voter][proposalId+1];
 
-Suggestion for rules that can catch it:
+7. DETECTED
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
 
-
-2. DETECTED (by sanity rule)
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-2.sol
-The change: VotingMachineWithProofs.sol:197:
-    orig:
-          assetFound = true;
-   mutant:
-          assetFound = false;
-
-Suggestion for rules that can catch it:
-
-3. DETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-3.sol
-The change: VotingMachineWithProofs.sol::222
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-7.sol
+The change: VotingMachineWithProofs.sol::319 
    orig:
       return _proposals[proposalId].votes[user];
    mutant:
       return _proposals[proposalId+1].votes[user];
 
-Suggestion for rules that can catch it:
 
+8. DETECTED
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
 
-4. DETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-4.sol
-The change: VotingMachineWithProofs.sol::250
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-8.sol
+The change: VotingMachineWithProofs.sol::324
     orig:
-        Proposal storage proposal = _proposals[proposalId];
+       Proposal storage proposal = _proposals[proposalId];
    mutant:
        Proposal storage proposal = _proposals[0];
 
 Suggestion for rules that can catch it:
 
-5. UNDETECTED
-Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-5.sol
-The change: VotingMachineWithProofs.sol::288
+9. 
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-9.sol
+The change: VotingMachineWithProofs.sol::385
     orig:
       proposalListLength - skip - i - 1
    mutant:
       proposalListLength - skip - i 
 
-Suggestion for rules that can catch it:
 
