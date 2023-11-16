@@ -66,7 +66,7 @@ contract VotingStrategy is BaseVotingStrategy, IVotingStrategy {
         );
 
         if (
-          delegationMode != DelegationMode.VOTING_DELEGATED &&
+            //          delegationMode != DelegationMode.VOTING_DELEGATED &&
           delegationMode != DelegationMode.FULL_POWER_DELEGATED
         ) {
           // adding user token balance if is not delegating his voting power
