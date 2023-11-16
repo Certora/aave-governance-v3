@@ -166,7 +166,8 @@ abstract contract PayloadsControllerCore is
         payloadState >= PayloadState.Created,
       Errors.PAYLOAD_NOT_IN_THE_CORRECT_STATE
     );
-    payload.state = PayloadState.Cancelled;
+    //payload.state = PayloadState.Cancelled; // ORIG
+    payload.state = PayloadState.Queued; // MUTANT
     payload.cancelledAt = uint40(block.timestamp);
 
     emit PayloadCancelled(payloadId);
@@ -239,8 +240,7 @@ abstract contract PayloadsControllerCore is
         block.timestamp >=
         payload.queuedAt + payload.delay + payload.gracePeriod)
     ) {
-        //return PayloadState.Expired; // ORIG
-        return PayloadState.None; // MUTANT
+      return PayloadState.Expired;
     }
 
     return state;
