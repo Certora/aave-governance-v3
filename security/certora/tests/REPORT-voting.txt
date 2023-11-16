@@ -29,9 +29,9 @@ The change: VotingMachineWithProofs.sol::319
 
 8. DETECTED
 Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-8.sol
-The change: VotingMachineWithProofs.sol::250
+The change: VotingMachineWithProofs.sol::324
     orig:
-        Proposal storage proposal = _proposals[proposalId];
+       Proposal storage proposal = _proposals[proposalId];
    mutant:
        Proposal storage proposal = _proposals[0];
 
@@ -39,7 +39,7 @@ Suggestion for rules that can catch it:
 
 9. UNDETECTED
 Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-9.sol
-The change: VotingMachineWithProofs.sol::288
+The change: VotingMachineWithProofs.sol::385
     orig:
       proposalListLength - skip - i - 1
    mutant:
