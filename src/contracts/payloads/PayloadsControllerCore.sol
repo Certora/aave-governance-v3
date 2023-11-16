@@ -78,7 +78,8 @@ abstract contract PayloadsControllerCore is
   ) external returns (uint40) {
     require(actions.length != 0, Errors.INVALID_EMPTY_TARGETS);
 
-    uint40 payloadId = _payloadsCount++;
+    //uint40 payloadId = _payloadsCount++; //ORIG
+    uint40 payloadId = _payloadsCount; // MUTANT
     uint40 creationTime = uint40(block.timestamp);
     Payload storage newPayload = _payloads[payloadId];
     newPayload.creator = msg.sender;
