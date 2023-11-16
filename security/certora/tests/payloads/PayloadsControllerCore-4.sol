@@ -239,7 +239,8 @@ abstract contract PayloadsControllerCore is
         block.timestamp >=
         payload.queuedAt + payload.delay + payload.gracePeriod)
     ) {
-      return PayloadState.Expired;
+        //return PayloadState.Expired; // ORIG
+        return PayloadState.None; // MUTANT
     }
 
     return state;
@@ -287,8 +288,7 @@ abstract contract PayloadsControllerCore is
    * @param executors array of UpdateExecutorInput with needed executor configurations
    */
   function _updateExecutors(UpdateExecutorInput[] memory executors) internal {
-      //for (uint256 i = 0; i < executors.length; i++) { // ORIG
-      for (uint256 i = 0; i < 1; i++) { // MUTANT
+    for (uint256 i = 0; i < executors.length; i++) {
       UpdateExecutorInput memory newExecutorConfig = executors[i];
 
       require(

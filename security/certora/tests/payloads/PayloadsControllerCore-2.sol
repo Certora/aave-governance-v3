@@ -139,7 +139,8 @@ abstract contract PayloadsControllerCore is
     payload.executedAt = uint40(block.timestamp);
 
     for (uint256 i = 0; i < payload.actions.length; i++) {
-      ExecutionAction storage action = payload.actions[i];
+      //ExecutionAction storage action = payload.actions[i]; // ORIG
+        ExecutionAction storage action = payload.actions[0]; // MUTANT
       IExecutor executor = IExecutor(
         _accessLevelToExecutorConfig[action.accessLevel].executor
       );
@@ -287,8 +288,7 @@ abstract contract PayloadsControllerCore is
    * @param executors array of UpdateExecutorInput with needed executor configurations
    */
   function _updateExecutors(UpdateExecutorInput[] memory executors) internal {
-      //for (uint256 i = 0; i < executors.length; i++) { // ORIG
-      for (uint256 i = 0; i < 1; i++) { // MUTANT
+    for (uint256 i = 0; i < executors.length; i++) {
       UpdateExecutorInput memory newExecutorConfig = executors[i];
 
       require(

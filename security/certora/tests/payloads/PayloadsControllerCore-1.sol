@@ -78,7 +78,8 @@ abstract contract PayloadsControllerCore is
   ) external returns (uint40) {
     require(actions.length != 0, Errors.INVALID_EMPTY_TARGETS);
 
-    uint40 payloadId = _payloadsCount++;
+    //uint40 payloadId = _payloadsCount++; //ORIG
+    uint40 payloadId = _payloadsCount; // MUTANT
     uint40 creationTime = uint40(block.timestamp);
     Payload storage newPayload = _payloads[payloadId];
     newPayload.creator = msg.sender;
@@ -287,8 +288,7 @@ abstract contract PayloadsControllerCore is
    * @param executors array of UpdateExecutorInput with needed executor configurations
    */
   function _updateExecutors(UpdateExecutorInput[] memory executors) internal {
-      //for (uint256 i = 0; i < executors.length; i++) { // ORIG
-      for (uint256 i = 0; i < 1; i++) { // MUTANT
+    for (uint256 i = 0; i < executors.length; i++) {
       UpdateExecutorInput memory newExecutorConfig = executors[i];
 
       require(

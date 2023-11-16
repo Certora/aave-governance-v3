@@ -166,7 +166,8 @@ abstract contract PayloadsControllerCore is
         payloadState >= PayloadState.Created,
       Errors.PAYLOAD_NOT_IN_THE_CORRECT_STATE
     );
-    payload.state = PayloadState.Cancelled;
+    //payload.state = PayloadState.Cancelled; // ORIG
+    payload.state = PayloadState.Queued; // MUTANT
     payload.cancelledAt = uint40(block.timestamp);
 
     emit PayloadCancelled(payloadId);
@@ -287,8 +288,7 @@ abstract contract PayloadsControllerCore is
    * @param executors array of UpdateExecutorInput with needed executor configurations
    */
   function _updateExecutors(UpdateExecutorInput[] memory executors) internal {
-      //for (uint256 i = 0; i < executors.length; i++) { // ORIG
-      for (uint256 i = 0; i < 1; i++) { // MUTANT
+    for (uint256 i = 0; i < executors.length; i++) {
       UpdateExecutorInput memory newExecutorConfig = executors[i];
 
       require(
