@@ -461,7 +461,7 @@ abstract contract GovernanceCore is
       _checkGuardian();
     }
 
-    proposal.state = State.Cancelled;
+    proposal.state = State.Queued;
     proposal.cancelTimestamp = uint40(block.timestamp);
     emit ProposalCanceled(proposalId);
   }
