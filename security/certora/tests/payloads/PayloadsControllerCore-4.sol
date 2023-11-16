@@ -78,8 +78,7 @@ abstract contract PayloadsControllerCore is
   ) external returns (uint40) {
     require(actions.length != 0, Errors.INVALID_EMPTY_TARGETS);
 
-    //uint40 payloadId = _payloadsCount++; //ORIG
-    uint40 payloadId = _payloadsCount; // MUTANT
+    uint40 payloadId = _payloadsCount++;
     uint40 creationTime = uint40(block.timestamp);
     Payload storage newPayload = _payloads[payloadId];
     newPayload.creator = msg.sender;
@@ -240,7 +239,8 @@ abstract contract PayloadsControllerCore is
         block.timestamp >=
         payload.queuedAt + payload.delay + payload.gracePeriod)
     ) {
-      return PayloadState.Expired;
+        //return PayloadState.Expired; // ORIG
+        return PayloadState.None; // MUTANT
     }
 
     return state;
