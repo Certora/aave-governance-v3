@@ -287,7 +287,7 @@ abstract contract GovernanceCore is
       Errors.PROPOSITION_POWER_IS_TOO_LOW
     );
 
-    proposal.state = State.Created;
+    proposal.state = State.Expired;
     proposal.creator = proposalCreator;
     proposal.accessLevel = maximumAccessLevelRequired;
     proposal.votingPortal = votingPortal;
