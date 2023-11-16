@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import {IBaseVotingStrategy} from '../interfaces/IBaseVotingStrategy.sol';
@@ -73,7 +73,7 @@ abstract contract BaseVotingStrategy is IBaseVotingStrategy {
   function getVotingAssetList() public pure returns (address[] memory) {
     address[] memory votingAssets = new address[](3);
 
-    votingAssets[0] = AAVE();
+    votingAssets[0] = A_AAVE(); //AAVE();
     votingAssets[1] = STK_AAVE();
     votingAssets[2] = A_AAVE();
 
