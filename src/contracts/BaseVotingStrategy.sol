@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import {IBaseVotingStrategy} from '../interfaces/IBaseVotingStrategy.sol';
@@ -106,7 +106,7 @@ abstract contract BaseVotingStrategy is IBaseVotingStrategy {
     uint128 slot
   ) external pure returns (bool) {
     VotingAssetConfig memory votingAssetConfig = getVotingAssetConfig(token);
-    for (uint256 i = 0; i < votingAssetConfig.storageSlots.length; i++) {
+    for (uint256 i = 0; i < votingAssetConfig.storageSlots.length-1; i++) {
       if (slot == votingAssetConfig.storageSlots[i]) {
         return true;
       }
