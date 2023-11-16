@@ -139,8 +139,7 @@ abstract contract PayloadsControllerCore is
     payload.executedAt = uint40(block.timestamp);
 
     for (uint256 i = 0; i < payload.actions.length; i++) {
-      //ExecutionAction storage action = payload.actions[i]; // ORIG
-        ExecutionAction storage action = payload.actions[0]; // MUTANT
+      ExecutionAction storage action = payload.actions[i];
       IExecutor executor = IExecutor(
         _accessLevelToExecutorConfig[action.accessLevel].executor
       );
@@ -240,7 +239,8 @@ abstract contract PayloadsControllerCore is
         block.timestamp >=
         payload.queuedAt + payload.delay + payload.gracePeriod)
     ) {
-      return PayloadState.Expired;
+        //return PayloadState.Expired; // ORIG
+        return PayloadState.None; // MUTANT
     }
 
     return state;
