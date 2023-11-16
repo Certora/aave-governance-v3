@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.0;
 
 import {Ownable} from 'solidity-utils/contracts/oz-common/Ownable.sol';
@@ -25,6 +25,10 @@ abstract contract VotingMachineWithProofs is
 {
   using SafeCast for uint256;
 
+  /// @inheritdoc IVotingMachineWithProofs
+  uint256 public constant REPRESENTATIVES_SLOT = 9;
+
+  /// @inheritdoc IVotingMachineWithProofs
   string public constant VOTING_ASSET_WITH_SLOT_RAW =
     'VotingAssetWithSlot(address underlyingAsset,uint128 slot)';
 
@@ -33,6 +37,15 @@ abstract contract VotingMachineWithProofs is
     keccak256(
       abi.encodePacked(
         'SubmitVote(uint256 proposalId,address voter,bool support,VotingAssetWithSlot[] votingAssetsWithSlot)',
+        VOTING_ASSET_WITH_SLOT_RAW
+      )
+    );
+
+  /// @inheritdoc IVotingMachineWithProofs
+  bytes32 public constant VOTE_SUBMITTED_BY_REPRESENTATIVE_TYPEHASH =
+    keccak256(
+      abi.encodePacked(
+        'SubmitVoteAsRepresentative(uint256 proposalId,address voter,address representative,bool support,VotingAssetWithSlot[] votingAssetsWithSlot)',
         VOTING_ASSET_WITH_SLOT_RAW
       )
     );
@@ -50,6 +63,9 @@ abstract contract VotingMachineWithProofs is
   /// @inheritdoc IVotingMachineWithProofs
   IDataWarehouse public immutable DATA_WAREHOUSE;
 
+  /// @inheritdoc IVotingMachineWithProofs
+  address public immutable GOVERNANCE;
+
   // (proposalId => proposal information) stores the information of the proposals
   mapping(uint256 => Proposal) internal _proposals;
 
@@ -60,32 +76,27 @@ abstract contract VotingMachineWithProofs is
   // saves the ids of the proposals that have been bridged for a vote.
   uint256[] internal _proposalsVoteConfigurationIds;
 
-  // (voter => proposalId => voteInfo) stores the information for the bridged votes
-  mapping(address => mapping(uint256 => BridgedVote)) internal _bridgedVotes;
-
   /**
    * @param votingStrategy address of the new VotingStrategy contract
+   * @param governance address of the governance contract on ethereum
    */
-  constructor(IVotingStrategy votingStrategy) Ownable() EIP712(NAME, 'V1') {
+  constructor(
+    IVotingStrategy votingStrategy,
+    address governance
+  ) Ownable() EIP712(NAME, 'V1') {
     require(
       address(votingStrategy) != address(0),
       Errors.INVALID_VOTING_STRATEGY
     );
+    require(governance != address(0), Errors.VM_INVALID_GOVERNANCE_ADDRESS);
     VOTING_STRATEGY = votingStrategy;
     DATA_WAREHOUSE = votingStrategy.DATA_WAREHOUSE();
+    GOVERNANCE = governance;
   }
 
   /// @inheritdoc IVotingMachineWithProofs
   function DOMAIN_SEPARATOR() public view returns (bytes32) {
     return _domainSeparatorV4();
-  }
-
-  /// @inheritdoc IVotingMachineWithProofs
-  function getBridgedVoteInfo(
-    uint256 proposalId,
-    address voter
-  ) external view returns (BridgedVote memory) {
-    return _bridgedVotes[voter][proposalId+1];
   }
 
   /// @inheritdoc IVotingMachineWithProofs
@@ -112,6 +123,8 @@ abstract contract VotingMachineWithProofs is
     );
 
     VOTING_STRATEGY.hasRequiredRoots(voteConfig.l1ProposalBlockHash);
+
+    _checkRepresentationRoots(voteConfig.l1ProposalBlockHash);
 
     uint40 startTime = _getCurrentTimeRef();
     uint40 endTime = startTime + voteConfig.votingDuration;
@@ -172,40 +185,6 @@ abstract contract VotingMachineWithProofs is
   }
 
   /// @inheritdoc IVotingMachineWithProofs
-  function settleVoteFromPortal(
-    uint256 proposalId,
-    address voter,
-    VotingBalanceProof[] calldata votingBalanceProofs
-  ) external {
-    BridgedVote memory bridgedVote = _bridgedVotes[voter][proposalId];
-
-    require(
-      bridgedVote.votingAssetsWithSlot.length == votingBalanceProofs.length,
-      Errors.INVALID_NUMBER_OF_PROOFS_FOR_VOTING_TOKENS
-    );
-
-    // check that the proofs are of the voter assets
-    for (uint256 i = 0; i < bridgedVote.votingAssetsWithSlot.length; i++) {
-      bool assetFound;
-      for (uint256 j = 0; j < votingBalanceProofs.length; j++) {
-        if (
-          votingBalanceProofs[j].underlyingAsset ==
-          bridgedVote.votingAssetsWithSlot[i].underlyingAsset &&
-          votingBalanceProofs[j].slot ==
-          bridgedVote.votingAssetsWithSlot[i].slot
-        ) {
-          assetFound = true;
-          break;
-        }
-      }
-
-      require(assetFound, Errors.PROOFS_NOT_FOR_VOTING_TOKENS);
-    }
-
-    _submitVote(voter, proposalId, bridgedVote.support, votingBalanceProofs);
-  }
-
-  /// @inheritdoc IVotingMachineWithProofs
   function submitVote(
     uint256 proposalId,
     bool support,
@@ -215,11 +194,129 @@ abstract contract VotingMachineWithProofs is
   }
 
   /// @inheritdoc IVotingMachineWithProofs
+  function submitVoteAsRepresentativeBySignature(
+    uint256 proposalId,
+    address voter,
+    address representative,
+    bool support,
+    bytes memory proofOfRepresentation,
+    VotingBalanceProof[] calldata votingBalanceProofs,
+    SignatureParams memory signatureParams
+  ) external {
+    bytes32[] memory underlyingAssetsWithSlotHashes = new bytes32[](
+      votingBalanceProofs.length
+    );
+    for (uint256 i = 0; i < votingBalanceProofs.length; i++) {
+      underlyingAssetsWithSlotHashes[i] = keccak256(
+        abi.encode(
+          VOTING_ASSET_WITH_SLOT_TYPEHASH,
+          votingBalanceProofs[i].underlyingAsset,
+          votingBalanceProofs[i].slot
+        )
+      );
+    }
+
+    bytes32 digest = _hashTypedDataV4(
+      keccak256(
+        abi.encode(
+          VOTE_SUBMITTED_BY_REPRESENTATIVE_TYPEHASH,
+          proposalId,
+          voter,
+          representative,
+          support,
+          keccak256(abi.encodePacked(underlyingAssetsWithSlotHashes))
+        )
+      )
+    );
+    address signer = ECDSA.recover(
+      digest,
+      signatureParams.v,
+      signatureParams.r,
+      signatureParams.s
+    );
+
+    require(
+      signer == representative && signer != address(0),
+      Errors.INVALID_SIGNATURE
+    );
+
+    _submitVoteAsRepresentative(
+      proposalId,
+      support,
+      voter,
+      representative,
+      proofOfRepresentation,
+      votingBalanceProofs
+    );
+  }
+
+  /// @inheritdoc IVotingMachineWithProofs
+  function submitVoteAsRepresentative(
+    uint256 proposalId,
+    bool support,
+    address voter,
+    bytes memory proofOfRepresentation,
+    VotingBalanceProof[] calldata votingBalanceProofs
+  ) external {
+    _submitVoteAsRepresentative(
+      proposalId,
+      support,
+      voter,
+      msg.sender,
+      proofOfRepresentation,
+      votingBalanceProofs
+    );
+  }
+
+  /**
+   * @notice Function to register the vote of user as its representative
+   * @param proposalId id of the proposal
+   * @param support boolean, true = vote for, false = vote against
+   * @param voter the voter address
+   * @param representative address of the voter representative
+   * @param proofOfRepresentation proof that can validate that msg.sender is the voter representative
+   * @param votingBalanceProofs list of voting assets proofs
+   */
+  function _submitVoteAsRepresentative(
+    uint256 proposalId,
+    bool support,
+    address voter,
+    address representative,
+    bytes memory proofOfRepresentation,
+    VotingBalanceProof[] calldata votingBalanceProofs
+  ) internal {
+    require(voter != address(0), Errors.INVALID_VOTER);
+    bytes32 l1ProposalBlockHash = _proposalsVoteConfiguration[proposalId]
+      .l1ProposalBlockHash;
+
+    bytes32 slot = SlotUtils.getRepresentativeSlotHash(
+      voter,
+      block.chainid,
+      REPRESENTATIVES_SLOT
+    );
+    StateProofVerifier.SlotValue memory storageData = DATA_WAREHOUSE.getStorage(
+      GOVERNANCE,
+      l1ProposalBlockHash,
+      slot,
+      proofOfRepresentation
+    );
+
+    address storedRepresentative = address(uint160(storageData.value));
+
+    require(
+      representative == storedRepresentative && representative != address(0),
+      Errors.CALLER_IS_NOT_VOTER_REPRESENTATIVE
+    );
+
+    _submitVote(voter, proposalId, support, votingBalanceProofs);
+  }
+
+  /// @inheritdoc IVotingMachineWithProofs
   function getUserProposalVote(
     address user,
     uint256 proposalId
   ) external view returns (Vote memory) {
-    return _proposals[proposalId].votes[user];
+    return _proposals[proposalId+1].votes[user];
   }
 
   /// @inheritdoc IVotingMachineWithProofs
@@ -289,6 +386,16 @@ abstract contract VotingMachineWithProofs is
       ];
     }
     return ids;
+  }
+
+  function _checkRepresentationRoots(
+    bytes32 l1ProposalBlockHash
+  ) internal view {
+    require(
+      DATA_WAREHOUSE.getStorageRoots(GOVERNANCE, l1ProposalBlockHash) !=
+        bytes32(0),
+      Errors.MISSING_REPRESENTATION_ROOTS
+    );
   }
 
   /**
@@ -444,57 +551,5 @@ abstract contract VotingMachineWithProofs is
       votingDuration,
       created
     );
-  }
-
-  /**
-   * @notice method that registers a vote on a proposal from a specific voter, contained in a bridged message
-             from governance chain
-   * @param proposalId id of the proposal bridged to start the vote on
-   * @param voter address that wants to emit the vote
-   * @param support indicates if vote is in favor or against the proposal
-   * @param votingAssetsWithSlot list of token addresses with base slots that the voter will use for voting
-   */
-  function _registerBridgedVote(
-    uint256 proposalId,
-    address voter,
-    bool support,
-    VotingAssetWithSlot[] memory votingAssetsWithSlot
-  ) internal {
-    // It also only allows to register the vote when proposal is active.
-    // To retry to register a vote (after it fails) the message will need to be retried from the cross chain controller
-    require(
-      _getProposalState(_proposals[proposalId]) == ProposalState.Active,
-      Errors.PROPOSAL_VOTE_CAN_NOT_BE_REGISTERED
-    );
-    require(voter != address(0), Errors.INVALID_VOTER);
-    require(votingAssetsWithSlot.length > 0, Errors.NO_BRIDGED_VOTING_ASSETS);
-    require(
-      _bridgedVotes[voter][proposalId].votingAssetsWithSlot.length == 0,
-      Errors.VOTE_ALREADY_BRIDGED
-    );
-    _bridgedVotes[voter][proposalId].support = support;
-    for (uint256 i = 0; i < votingAssetsWithSlot.length; i++) {
-      require(
-        IBaseVotingStrategy(address(VOTING_STRATEGY)).isTokenSlotAccepted(
-          votingAssetsWithSlot[i].underlyingAsset,
-          votingAssetsWithSlot[i].slot
-        ),
-        Errors.INVALID_BRIDGED_VOTING_TOKEN
-      );
-      for (uint256 j = i + 1; j < votingAssetsWithSlot.length; j++) {
-        require(
-          votingAssetsWithSlot[j].underlyingAsset !=
-            votingAssetsWithSlot[i].underlyingAsset ||
-            votingAssetsWithSlot[j].slot != votingAssetsWithSlot[i].slot,
-          Errors.BRIDGED_REPEATED_ASSETS
-        );
-      }
-
-      _bridgedVotes[voter][proposalId].votingAssetsWithSlot.push(
-        votingAssetsWithSlot[i]
-      );
-    }
-
-    emit VoteBridged(proposalId, voter, support, votingAssetsWithSlot);
   }
 }
