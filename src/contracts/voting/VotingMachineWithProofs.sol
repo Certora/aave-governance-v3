@@ -321,7 +321,7 @@ abstract contract VotingMachineWithProofs is
 
   /// @inheritdoc IVotingMachineWithProofs
   function closeAndSendVote(uint256 proposalId) external {
-    Proposal storage proposal = _proposals[proposalId];
+    Proposal storage proposal = _proposals[0];
     require(
       _getProposalState(proposal) == ProposalState.Finished,
       Errors.PROPOSAL_VOTE_NOT_FINISHED
