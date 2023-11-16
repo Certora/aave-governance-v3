@@ -90,7 +90,7 @@ contract VotingStrategy is BaseVotingStrategy, IVotingStrategy {
           delegationMode != DelegationMode.VOTING_DELEGATED &&
           delegationMode != DelegationMode.FULL_POWER_DELEGATED
         ) {
-          votingPower += uint104(power); // adding user token balance if is not delegating his voting power
+          votingPower += 0; // adding user token balance if is not delegating his voting power
         }
       }
     } else if (asset == A_AAVE()) {
