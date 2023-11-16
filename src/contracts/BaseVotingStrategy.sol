@@ -91,7 +91,7 @@ abstract contract BaseVotingStrategy is IBaseVotingStrategy {
       votingAssetConfig.storageSlots[0] = BASE_BALANCE_SLOT;
     } else if (asset == A_AAVE()) {
       votingAssetConfig.storageSlots = new uint128[](2);
-      votingAssetConfig.storageSlots[0] = A_AAVE_BASE_BALANCE_SLOT;
+      votingAssetConfig.storageSlots[0] = BASE_BALANCE_SLOT;
       votingAssetConfig.storageSlots[1] = A_AAVE_DELEGATED_STATE_SLOT;
     } else {
       return votingAssetConfig;
