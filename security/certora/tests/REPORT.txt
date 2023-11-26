@@ -1,0 +1,209 @@
+
+Mutations:
+---------
+1.  UNDETECTED
+Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-1.sol
+The change: BaseVotingStrategy.sol:76:
+   orig:
+   "votingAssets[0] = AAVE();"
+   mutant:
+   "votingAssets[0] = A_AAVE(); //AAVE();"
+
+Suggestion for rules that can catch it:
+- invariant that all entries of the array returned by getVotingAssetList() are different
+- For every voting token T, and every user U that does not delegate, if the balance of U in T is increased then the power of U increased.
+
+
+2. DETECTED 
+By certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-2.sol
+The change: BaseVotingStrategy.sol:109:
+   orig:
+      "for (uint256 i = 0; i < votingAssetConfig.storageSlots.length; i++) {"
+   mutant:
+      "for (uint256 i = 0; i < votingAssetConfig.storageSlots.length-1; i++) {"
+
+Suggestion for rule that can catch it:
+- We have the rule: invalidTokenRefused(...). We can add its analogue validTokenAccepted(...).
+
+
+3. DETECTED 
+By: certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
+Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-3.sol
+The change: GovernancePowerStrategy.sol::25:
+   orig:
+        "IGovernancePowerDelegationToken.GovernancePowerType.VOTING"
+   mutant:
+        "IGovernancePowerDelegationToken.GovernancePowerType.PROPOSITION"
+
+
+
+4. UNDETECTED 
+Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-4.sol
+The change: GovernancePowerStrategy.sol::53:
+    orig:
+    "for (uint256 i = 0; i < votingAssetList.length; i++) {"
+    mutant:
+    "for (uint256 i = 0; i < votingAssetList.length-1; i++) {"
+
+Suggestion for rule that can catch it:
+- Like the recommendation in #1:
+  For every voting token T, and every user U that does not delegate, if the balance of U in T is increased then the power of U increased.
+  
+
+5. UNDETECTED
+Changed file: GovernancePowerStrategy.sol ==> GovernancePowerStrategy-5.sol
+The change: GovernancePowerStrategy.sol::53:
+    orig:
+      fullGovernancePower += IGovernancePowerDelegationToken(votingAssetList[i])
+    mutant:
+      fullGovernancePower += IGovernancePowerDelegationToken(votingAssetList[0])
+
+Suggestion for rule that can catch it:
+- Same as in #4.
+
+
+6. DETECTED
+By:
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf
+certora-review-mainnet.yml::verifyGovernancePowerStrategy.conf
+
+Changed file: BaseVotingStrategy.sol ==> BaseVotingStrategy-6.sol
+The Change: BaseVotingStrategy.sol::94:
+    orig:
+    votingAssetConfig.storageSlots[0] = A_AAVE_BASE_BALANCE_SLOT;
+    mutant:
+    votingAssetConfig.storageSlots[0] = BASE_BALANCE_SLOT;
+
+
+7. DETECTED
+certora-review-voting-chain.yml::verifyMisc.conf
+
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-7.sol
+The change: VotingMachineWithProofs.sol::319 
+   orig:
+      return _proposals[proposalId].votes[user];
+   mutant:
+      return _proposals[proposalId+1].votes[user];
+
+
+8. DETECTED
+certora-review-voting-chain.yml::verifyMisc.conf
+
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-8.sol
+The change: VotingMachineWithProofs.sol::324
+    orig:
+       Proposal storage proposal = _proposals[proposalId];
+   mutant:
+       Proposal storage proposal = _proposals[0];
+
+Suggestion for rules that can catch it:
+
+9. UNDETECTED
+Changed file: VotingMachineWithProofs.sol ==> VotingMachineWithProofs-9.sol
+The change: VotingMachineWithProofs.sol::385
+    orig:
+      proposalListLength - skip - i - 1
+   mutant:
+      proposalListLength - skip - i 
+
+
+10. UNDETECTED
+Changed file: VotingStrategy.sol ==> VotingStrategy-10.sol
+The change: VotingStrategy.sol::69
+    orig:
+          delegationMode != DelegationMode.VOTING_DELEGATED &&   
+   mutant (line commented):
+ //          delegationMode != DelegationMode.VOTING_DELEGATED &&
+
+
+11. DETECTED
+certora-review-mainnet.yml::verifyVotingStrategy_unittests.conf 
+
+Changed file: VotingStrategy.sol ==> VotingStrategy-11.sol
+The change: VotingStrategy.sol::93
+    orig:
+          votingPower += uint104(power);
+   mutant:
+          votingPower += 0;
+
+12. UNDETECTED
+Changed file: GovernanceCore.sol ==> GovernanceCore-12.sol
+The change: GovernanceCore.sol::174
+   orig:
+     ? representatives[i].representative
+   mutant:
+     ? address(0)
+     
+
+13. UNDETECTED
+Changed file: GovernanceCore.sol ==> GovernanceCore-13.sol
+The change: GovernanceCore.sol::290
+   orig:
+      proposal.state = State.Created;
+   mutant:
+      proposal.state = State.Expired;
+
+
+14. DETECTED
+By: verifyGovernance.conf:: only_valid_voting_portal_can_queue_proposal, guardian_can_cancel
+Changed file: GovernanceCore.sol ==> GovernanceCore-14.sol
+The change: GovernanceCore.sol::464
+   orig:
+    proposal.state = State.Cancelled;
+   mutant:
+    proposal.state = State.Queued;
+
+
+
+15. DETECTED
+By: verifyPayloadsController.conf::null_state_variable_if_out_of_bound_payload, empty_actions_if_out_of_bound_payload
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-15.sol
+The change: PayloadsControllerCore:81:
+   orig:
+   uint40 payloadId = _payloadsCount++;
+   mutant:
+   uint40 payloadId = _payloadsCount;
+
+
+
+16. TIME-OUT (most jobs)
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-16.sol
+The change: PayloadsControllerCore:142:
+   orig:
+   ExecutionAction storage action = payload.actions[i];
+   mutant:
+   ExecutionAction storage action = payload.actions[0];
+
+
+17. UNDETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-17.sol
+The change: PayloadsControllerCore:169:
+   orig:
+   payload.state = PayloadState.Cancelled;
+   mutant:
+   payload.state = PayloadState.Queued;
+
+
+18. UNDETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-18.sol
+The change: PayloadsControllerCore:242:
+   orig:
+   return PayloadState.Expired;
+   mutant:
+   return PayloadState.None;
+
+
+19. UNDETECTED
+Changed file: PayloadsControllerCore.sol ==> PayloadsControllerCore-19.sol
+The change: PayloadsControllerCore:290:
+   orig:
+   for (uint256 i = 0; i < executors.length; i++) {
+   mutant:
+   for (uint256 i = 0; i < 1; i++) {
+
+
+   
+
+
+
