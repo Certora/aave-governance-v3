@@ -548,10 +548,11 @@ rule guardian_can_cancel_state_variable{
 	uint40 payloadId;
 	IPayloadsControllerCore.PayloadState state_before = getPayloadStateVariable(payloadId);
 	cancelPayload@withrevert(e, payloadId);
+	bool is_reverted = lastReverted;
 	assert 
 		e.msg.sender == guardian() && 
 		(state_before ==  IPayloadsControllerCore.PayloadState.Created ||
-		state_before ==  IPayloadsControllerCore.PayloadState.Queued) => !lastReverted ;
+		state_before ==  IPayloadsControllerCore.PayloadState.Queued) => !is_reverted ;
 
 
 }
@@ -563,10 +564,11 @@ rule guardian_can_cancel{
 	uint40 payloadId;
 	IPayloadsControllerCore.PayloadState state_before = getPayloadState(e, payloadId);
 	cancelPayload@withrevert(e, payloadId);
+	bool is_reverted = lastReverted;
 	assert 
 		e.msg.sender == guardian() && 
 		(state_before ==  IPayloadsControllerCore.PayloadState.Created ||
-		state_before ==  IPayloadsControllerCore.PayloadState.Queued) => !lastReverted ;
+		state_before ==  IPayloadsControllerCore.PayloadState.Queued) => !is_reverted ;
 
 
 }
