@@ -114,7 +114,7 @@ ghost mapping(address => mapping(uint256 => uint256)) mirrorArrayLen{
  * hook for Set array stores
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sstore _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 0)[INDEX uint256 index] bytes32 newValue (bytes32 oldValue) STORAGE {
+hook Sstore _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 0)[INDEX uint256 index] bytes32 newValue (bytes32 oldValue) {
     mirrorArray[rep][chain][index] = newValue;
 }
 
@@ -122,14 +122,14 @@ hook Sstore _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 0)
  * hook for Set array loads
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sload bytes32 value _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 0)[INDEX uint256 index] STORAGE {
+hook Sload bytes32 value _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 0)[INDEX uint256 index] {
     require(mirrorArray[rep][chain][index] == value);
 }
 /**
  * hook for Set map stores
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sstore _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 32)[KEY bytes32 key] uint256 newIndex (uint256 oldIndex) STORAGE {
+hook Sstore _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 32)[KEY bytes32 key] uint256 newIndex (uint256 oldIndex) {
       mirrorMap[rep][chain][key] = newIndex;
 }
 
@@ -137,7 +137,7 @@ hook Sstore _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 32
  * hook for Set map loads
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sload uint256 index _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 32)[KEY bytes32 key] STORAGE {
+hook Sload uint256 index _votersRepresented [KEY address rep] [KEY uint256 chain] .(offset 32)[KEY bytes32 key] {
     require(mirrorMap[rep][chain][key] == index);
 }
 
@@ -145,7 +145,7 @@ hook Sload uint256 index _votersRepresented [KEY address rep] [KEY uint256 chain
  * hook for Set array length stores
  * @dev user of this spec must replace _list with the instance name of the Set.
  **/
-hook Sstore _votersRepresented  [KEY address rep] [KEY uint256 chain] .(offset 0).(offset 0) uint256 newLen (uint256 oldLen) STORAGE {
+hook Sstore _votersRepresented  [KEY address rep] [KEY uint256 chain] .(offset 0).(offset 0) uint256 newLen (uint256 oldLen) {
         mirrorArrayLen[rep][chain] = newLen;
 }
 
@@ -153,7 +153,7 @@ hook Sstore _votersRepresented  [KEY address rep] [KEY uint256 chain] .(offset 0
  * hook for Set array length load
  * @dev user of this spec must replace _votersRepresented with the instance name of the Set.
  **/
-hook Sload uint256 len _votersRepresented  [KEY address rep] [KEY uint256 chain] .(offset 0).(offset 0) STORAGE {
+hook Sload uint256 len _votersRepresented  [KEY address rep] [KEY uint256 chain] .(offset 0).(offset 0) {
     require mirrorArrayLen[rep][chain] == len;
 }
 
