@@ -542,10 +542,11 @@ rule guardian_can_cancel{
 	uint40 payloadId;
 	IPayloadsControllerCore.PayloadState state_before = getPayloadStateVariable(payloadId);
 	cancelPayload@withrevert(e, payloadId);
+        bool LR = lastReverted;
 	assert 
 		e.msg.sender == guardian() && 
 		(state_before ==  IPayloadsControllerCore.PayloadState.Created ||
-		state_before ==  IPayloadsControllerCore.PayloadState.Queued) => !lastReverted ;
+		state_before ==  IPayloadsControllerCore.PayloadState.Queued) => !LR ;
 
 
 }

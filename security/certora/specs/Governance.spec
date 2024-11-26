@@ -72,7 +72,7 @@ ghost mathint totalCancellationFee{
 ghost bool isCancellationChanged;
 
 hook Sstore _proposals[KEY uint256 proposalId].cancellationFee uint256 newFee
-    (uint256 oldFee) STORAGE
+    (uint256 oldFee) 
 {
     if (newFee != oldFee){
         isCancellationChanged = true;
