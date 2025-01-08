@@ -17,7 +17,7 @@ jobs:
         with:
           submodules: recursive
       - uses: actions/setup-node@v4
-      - uses: Certora/certora-run-action@main
+      - uses: Certora/certora-run-action@feat/isolated-envs
         with:
           # --disable_auto_cache_key_gen
           #  security/certora/confs/payloads/verifyPayloadsController.conf --rule executor_exists
