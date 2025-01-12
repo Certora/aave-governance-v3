@@ -13,9 +13,7 @@ abstract contract BaseInitialDeployment is GovBaseScript {
   }
 
   function CREATE3_FACTORY() public view virtual returns (address) {
-    DeployerHelpers.Addresses memory ccAddresses = _getCCAddresses(
-      TRANSACTION_NETWORK()
-    );
+    CCCAddresses memory ccAddresses = _getCCAddresses(TRANSACTION_NETWORK());
     return ccAddresses.create3Factory;
   }
 
@@ -143,7 +141,19 @@ contract Scroll is BaseInitialDeployment {
 
 contract Zksync is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return ChainIds.ZK_SYNC;
+    return ChainIds.ZKSYNC;
+  }
+}
+
+contract Linea is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.LINEA;
+  }
+}
+
+contract Celo is BaseInitialDeployment {
+  function TRANSACTION_NETWORK() public pure override returns (uint256) {
+    return ChainIds.CELO;
   }
 }
 
@@ -155,7 +165,7 @@ contract Ethereum_testnet is BaseInitialDeployment {
 
 contract Polygon_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.POLYGON_MUMBAI;
+    return TestNetChainIds.POLYGON_AMOY;
   }
 }
 
@@ -167,13 +177,13 @@ contract Avalanche_testnet is BaseInitialDeployment {
 
 contract Arbitrum_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ARBITRUM_GOERLI;
+    return TestNetChainIds.ARBITRUM_SEPOLIA;
   }
 }
 
 contract Optimism_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.OPTIMISM_GOERLI;
+    return TestNetChainIds.OPTIMISM_SEPOLIA;
   }
 }
 
@@ -191,12 +201,12 @@ contract Binance_testnet is BaseInitialDeployment {
 
 contract Base_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.BASE_GOERLI;
+    return TestNetChainIds.BASE_SEPOLIA;
   }
 }
 
 contract Zksync_testnet is BaseInitialDeployment {
   function TRANSACTION_NETWORK() public pure override returns (uint256) {
-    return TestNetChainIds.ZK_SYNC_SEPOLIA;
+    return TestNetChainIds.ZKSYNC_SEPOLIA;
   }
 }
