@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: Certora/certora-run-action@feat/auto-timeouter
+      - uses: Certora/certora-run-action@v2.10.0
         with:
           cli-release: stable
           auto-rerun-timeouts: "true"
